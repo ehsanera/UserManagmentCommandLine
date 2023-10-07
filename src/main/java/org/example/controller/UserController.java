@@ -2,6 +2,8 @@ package org.example.controller;
 
 import org.example.entity.User;
 import org.example.service.UserService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,12 +20,17 @@ public class UserController {
     }
 
     @GetMapping("/users")
-    public List<User> all() {
-        return userService.all();
+    public ResponseEntity<List<User>> all() {
+        var users = userService.all();
+        if (users.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } else {
+            return new ResponseEntity<>(users, HttpStatus.OK);
+        }
     }
 
     @PostMapping("/users")
-    public User save(@RequestBody User user) {
-        return userService.save(user);
+    public ResponseEntity<User> save(@RequestBody User user) {
+        return new ResponseEntity<>(userService.save(user), HttpStatus.CREATED);
     }
 }
